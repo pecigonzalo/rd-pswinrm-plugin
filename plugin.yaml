@@ -1,0 +1,133 @@
+name: rd-pswinrm-plugin
+version: 0.3.0
+rundeckPluginVersion: 1.0
+author: Gonzalo Peci
+date: 19.01.2016
+providers:
+  - name: Ps-WinRM-Exec
+    title: WinRM Executor
+    description: Executing Scripts or commands on remote windows computer
+    service: NodeExecutor
+    plugin-type: script
+    script-interpreter: powershell -NoLogo -NoProfile -NonInteractive -File
+    script-file: exec.ps1
+    interpreter-args-quoted: false
+    config:
+      - name: username
+        title: Username
+        description: "Username in DOMAIN\\name form"
+        type: String
+        required: false
+        scope: Instance
+        renderingOptions:
+          instance-scope-node-attribute: "user"
+      - name: password
+        title: Password
+        description: 'Path to the Password to use within Rundeck Storage. E.g. "keys/path/my.password". Can be overridden by a Node attribute named "winrm-password-storage-path".'
+        type: String
+        required: false
+        scope: Instance
+        renderingOptions:
+          displayType: PASSWORD
+          selectionAccessor: STORAGE_PATH
+          instance-scope-node-attribute: "winrm-password-storage-path"
+      - name: allowoverride
+        title: Allow Override
+        description: "Gives possibility to override hostname, username (and password) in job options"
+        type: Select
+        values: "none, host, user, all"
+        default: "none"
+        required: true
+        scope: Instance
+        renderingOptions:
+          instance-scope-node-attribute: "allowoverride"
+      - name: winrmport
+        title: WinRM port
+        description: "WinRM port (Default: 5985/5986 for http/https)"
+        type: String
+        default: "5985"
+        required: true
+        scope: Instance
+        renderingOptions:
+          instance-scope-node-attribute: "winrmport"
+      - name: shell
+        title: Shell
+        description: "Windows interpreter"
+        type: Select
+        values: "cmd, powershell"
+        default: 'powershell'
+        required: true
+        scope: Instance
+        renderingOptions:
+          instance-scope-node-attribute: "shell"
+      - name: winrmtimeout
+        title: WinRM timeout
+        description: "timeout in seconds default: 60"
+        type: Integer
+        required: false
+        scope: Instance
+        renderingOptions:
+          instance-scope-node-attribute: "winrmtimeout"
+  - name: Ps-WinRM-Copy
+    title: WinRM File Copier
+    service: FileCopier
+    plugin-type: script
+    script-interpreter: powershell -NoLogo -NoProfile -NonInteractive -Command
+    script-file: copy.ps1
+    script-args: -hostname ${node.hostname} -username ${config.username} -password ${config.password} -port ${config.winrmport} ${file-copy.file} ${file-copy.destination}
+    config:
+      - name: user
+        title: Username
+        description: "Username in DOMAIN\\name form"
+        type: String
+        required: false
+        scope: Instance
+        renderingOptions:
+          instance-scope-node-attribute: "user"
+      - name: pass
+        title: Password
+        description: 'Path to the Password to use within Rundeck Storage. E.g. "keys/path/my.password". Can be overridden by a Node attribute named "winrm-password-storage-path".'
+        type: String
+        required: false
+        scope: Instance
+        renderingOptions:
+          displayType: PASSWORD
+          selectionAccessor: STORAGE_PATH
+          instance-scope-node-attribute: "winrm-password-storage-path"
+      - name: allowoverride
+        title: Allow Override
+        description: "Gives possibility to override hostname, username (and password) in job options"
+        type: Select
+        values: "none, host, user, all"
+        default: "none"
+        required: true
+        scope: Instance
+        renderingOptions:
+          instance-scope-node-attribute: "allowoverride"
+      - name: winrmport
+        title: WinRM port
+        description: "WinRM port (Default: 5985/5986 for http/https)"
+        type: String
+        default: "5985"
+        required: true
+        scope: Instance
+        renderingOptions:
+          instance-scope-node-attribute: "winrmport"
+      - name: shell
+        title: Shell
+        description: "Windows interpreter"
+        type: Select
+        values: "cmd, powershell"
+        default: 'powershell'
+        required: true
+        scope: Instance
+        renderingOptions:
+          instance-scope-node-attribute: "shell"
+      - name: winrmtimeout
+        title: WinRM timeout
+        description: "timeout in seconds default: 60"
+        type: Integer
+        required: false
+        scope: Instance
+        renderingOptions:
+          instance-scope-node-attribute: "winrmtimeout"
